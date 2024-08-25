@@ -6,17 +6,16 @@ use Symfony\Component\Validator\Constraints as Assert;
 class UserRegistrationInput
 {
     #[Assert\NotBlank]
-    #[Assert\Email]
+    #[Assert\Email(
+        mode: Assert\Email::VALIDATION_MODE_STRICT
+    )]
     public string $email;
 
     #[Assert\NotBlank]
-    #[Assert\Length(min: 6)]
+    #[Assert\PasswordStrength]
     public string $password;
 
     #[Assert\NotBlank]
+    #[Assert\Length(min: 8, max: 32)]
     public string $username; // For PublicProfile
-
-    // Additional fields for customer secure information, e.g., address, payment method
-    public ?string $address = null;
-    public ?string $paymentMethod = null;
 }

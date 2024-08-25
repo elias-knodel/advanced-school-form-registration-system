@@ -9,6 +9,8 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Core\Doctrine\Lifecycle\TimestampableTrait;
+use App\User\DataPersister\UserRegistrationPersister;
+use App\User\Dto\UserRegistrationInput;
 use App\User\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
@@ -19,7 +21,10 @@ use Symfony\Component\Uid\Uuid;
 #[ApiResource(
     operations: [
         new GetCollection(),
-        new Post(),
+        new Post(
+            input: UserRegistrationInput::class,
+            processor: UserRegistrationPersister::class,
+        ),
     ]
 )]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
