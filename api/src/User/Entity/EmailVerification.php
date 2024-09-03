@@ -18,7 +18,7 @@ class EmailVerification
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
 
-    #[ORM\Column(length: 32)]
+    #[ORM\Column(length: 64)]
     private ?string $verificationKey = null;
 
     public function getId(): ?int

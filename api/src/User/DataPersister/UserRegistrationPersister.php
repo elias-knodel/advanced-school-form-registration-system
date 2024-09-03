@@ -40,7 +40,7 @@ class UserRegistrationPersister implements ProcessorInterface
         // Create User entity
         $user = new User();
         $user->setEmail($data->email);
-        $hashedPassword = $this->passwordHasher->hashPassword($user, $data->password);
+        $hashedPassword = $data->password;
         $user->setPassword($hashedPassword);
 
         $this->entityManager->persist($user);
@@ -59,7 +59,7 @@ class UserRegistrationPersister implements ProcessorInterface
             ->subject('Please verify your email')
             ->text('Please use the following token to verify your email: ' . $emailVerification->getVerificationKey());
 
-        $this->mailer->send($email);
+//        $this->mailer->send($email);
 
         // Flush all changes
         $this->entityManager->flush();

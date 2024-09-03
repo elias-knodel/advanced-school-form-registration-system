@@ -20,15 +20,11 @@ class TestController extends AbstractController
     #[Route('/docs/test', name: 'app_test')]
     public function index(EntityManagerInterface $entityManager): Response
     {
-        $schools = $this->schoolRepository->findAll();
+//        $schools = $this->schoolRepository->findAll();
+//
+//        $entityManager->remove($schools[0]);
+//        $entityManager->flush();
 
-        $entityManager->remove($schools[0]);
-        $entityManager->flush();
-
-        dd($schools);
-
-        return $this->render('test/index.html.twig', [
-            'controller_name' => 'TestController',
-        ]);
+        dd(bin2hex(random_bytes(32)));
     }
 }

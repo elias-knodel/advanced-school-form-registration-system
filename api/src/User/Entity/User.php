@@ -14,21 +14,39 @@ use App\User\Dto\UserRegistrationInput;
 use App\User\Repository\UserRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\SerializedName;
 use Symfony\Component\Uid\Uuid;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ApiResource(
     operations: [
         new GetCollection(),
+        new Get(
+            security: "is_granted('USER_VIEW')",
+        ),
+        new Patch(
+            security: "is_granted('USER_EDIT')",
+            validationContext: ['groups' => ['Default', 'user:update']],
+        ),
+        new Delete(
+            security: "is_granted('USER_EDIT')",
+        ),
         new Post(
             input: UserRegistrationInput::class,
             processor: UserRegistrationPersister::class,
         ),
-    ]
+    ],
+    normalizationContext: ['groups' => ['user:read']],
+    denormalizationContext: ['groups' => ['user:create', 'user:update']],
 )]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
+#[UniqueEntity(fields: ['email'])]
+#[ORM\HasLifecycleCallbacks]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     use TimestampableTrait;
@@ -39,6 +57,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?Uuid $id = null;
 
+    #[Assert\Email(
+        mode: Assert\Email::VALIDATION_MODE_STRICT
+    )]
+    #[Groups(['user:read', 'user:update'])]
     #[ORM\Column(length: 180, unique: true)]
     private ?string $email = null;
 
@@ -53,6 +75,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
+    #[Assert\PasswordStrength]
+    #[Groups(['user:update'])]
+    #[SerializedName('password')]
+    private ?string $plainPassword = null;
 
     public function getId(): ?Uuid
     {
@@ -116,6 +143,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setPassword(string $password): static
     {
         $this->password = $password;
+
+        return $this;
+    }
+
+    public function getPlainPassword(): ?string
+    {
+        return $this->plainPassword;
+    }
+
+    public function setPlainPassword(string $plainPassword): static
+    {
+        $this->plainPassword = $plainPassword;
 
         return $this;
     }
