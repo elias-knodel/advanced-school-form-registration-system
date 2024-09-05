@@ -9,9 +9,9 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Core\Doctrine\Lifecycle\TimestampableTrait;
-use App\User\DataPersister\UserRegistrationPersister;
 use App\User\Dto\UserRegistrationInput;
 use App\User\Repository\UserRepository;
+use App\User\State\UserRegistrationProcessor;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -26,18 +26,18 @@ use Symfony\Component\Validator\Constraints as Assert;
     operations: [
         new GetCollection(),
         new Get(
-            security: "is_granted('USER_VIEW')",
+            security: "is_granted('USER_VIEW', object)",
         ),
         new Patch(
-            security: "is_granted('USER_EDIT')",
+            security: "is_granted('USER_EDIT', object)",
             validationContext: ['groups' => ['Default', 'user:update']],
         ),
         new Delete(
-            security: "is_granted('USER_EDIT')",
+//            security: "is_granted('USER_EDIT', object)",
         ),
         new Post(
             input: UserRegistrationInput::class,
-            processor: UserRegistrationPersister::class,
+            processor: UserRegistrationProcessor::class
         ),
     ],
     normalizationContext: ['groups' => ['user:read']],
@@ -45,7 +45,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 )]
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\Table(name: '`user`')]
-#[UniqueEntity(fields: ['email'])]
+#[UniqueEntity(fields: ['email'], message: 'There is already an account with this email')]
 #[ORM\HasLifecycleCallbacks]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
@@ -80,6 +80,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Groups(['user:update'])]
     #[SerializedName('password')]
     private ?string $plainPassword = null;
+
+    #[ORM\OneToOne(mappedBy: 'owner', targetEntity: EmailVerification::class, cascade: ['remove'])]
+    private ?EmailVerification $emailVerification = null;
 
     public function getId(): ?Uuid
     {
