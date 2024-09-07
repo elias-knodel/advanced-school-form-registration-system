@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Repository\User\Entity;
+namespace App\User\Repository;
 
 use App\User\Entity\EmailVerification;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;

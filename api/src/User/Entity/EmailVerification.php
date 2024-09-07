@@ -4,13 +4,12 @@ namespace App\User\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
 use App\Core\Doctrine\Lifecycle\TimestampableTrait;
-use App\Repository\User\Entity\EmailVerificationRepository;
+use App\User\Repository\EmailVerificationRepository;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Uid\Uuid;
 
-#[ApiResource()]
 #[UniqueEntity(['verificationKey'], message: 'Something unexpected happened please try again later')]
 #[ORM\Entity(repositoryClass: EmailVerificationRepository::class)]
 #[ORM\HasLifecycleCallbacks]

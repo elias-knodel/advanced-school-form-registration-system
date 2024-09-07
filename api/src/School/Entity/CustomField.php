@@ -3,9 +3,11 @@
 namespace App\School\Entity;
 
 use App\Core\Doctrine\Lifecycle\TimestampableTrait;
+use App\School\Enum\CustomFieldType;
 use App\School\Repository\CustomFieldRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
@@ -24,13 +26,22 @@ class CustomField
 
     #[ORM\ManyToOne(inversedBy: 'customFields')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?School $School = null;
+    private ?School $school = null;
 
     /**
      * @var Collection<int, CustomFormField>
      */
     #[ORM\OneToMany(mappedBy: 'Field', targetEntity: CustomFormField::class, orphanRemoval: true)]
     private Collection $customFormFields;
+
+    #[ORM\Column(length: 255)]
+    private ?string $title = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $tooltip = null;
+
+    #[ORM\Column(length: 255)]
+    private ?CustomFieldType $type = null;
 
     public function __construct()
     {
@@ -44,12 +55,12 @@ class CustomField
 
     public function getSchool(): ?School
     {
-        return $this->School;
+        return $this->school;
     }
 
-    public function setSchool(?School $School): static
+    public function setSchool(?School $school): static
     {
-        $this->School = $School;
+        $this->school = $school;
 
         return $this;
     }
@@ -80,6 +91,42 @@ class CustomField
                 $customFormField->setField(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): static
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function getTooltip(): ?string
+    {
+        return $this->tooltip;
+    }
+
+    public function setTooltip(string $tooltip): static
+    {
+        $this->tooltip = $tooltip;
+
+        return $this;
+    }
+
+    public function getType(): ?CustomFieldType
+    {
+        return $this->type;
+    }
+
+    public function setType(CustomFieldType $type): static
+    {
+        $this->type = $type;
 
         return $this;
     }

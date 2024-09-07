@@ -9,9 +9,12 @@ use ApiPlatform\Metadata\GetCollection;
 use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Core\Doctrine\Lifecycle\TimestampableTrait;
+use App\School\Entity\SchoolStaff;
 use App\User\Dto\UserRegistrationInput;
 use App\User\Repository\UserRepository;
 use App\User\State\UserRegistrationProcessor;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -83,6 +86,20 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     #[ORM\OneToOne(mappedBy: 'owner', targetEntity: EmailVerification::class, cascade: ['remove'])]
     private ?EmailVerification $emailVerification = null;
+
+    /**
+     * @var Collection<int, SchoolStaff>
+     */
+    #[ORM\OneToMany(mappedBy: 'employee', targetEntity: SchoolStaff::class, orphanRemoval: true)]
+    private Collection $schoolStaff;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $verified = null;
+
+    public function __construct()
+    {
+        $this->schoolStaff = new ArrayCollection();
+    }
 
     public function getId(): ?Uuid
     {
@@ -169,5 +186,47 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         // If you store any temporary, sensitive data on the user, clear it here
         // $this->plainPassword = null;
+    }
+
+    /**
+     * @return Collection<int, SchoolStaff>
+     */
+    public function getSchoolStaff(): Collection
+    {
+        return $this->schoolStaff;
+    }
+
+    public function addSchoolStaff(SchoolStaff $schoolStaff): static
+    {
+        if (!$this->schoolStaff->contains($schoolStaff)) {
+            $this->schoolStaff->add($schoolStaff);
+            $schoolStaff->setEmployee($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSchoolStaff(SchoolStaff $schoolStaff): static
+    {
+        if ($this->schoolStaff->removeElement($schoolStaff)) {
+            // set the owning side to null (unless already changed)
+            if ($schoolStaff->getEmployee() === $this) {
+                $schoolStaff->setEmployee(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function isVerified(): ?bool
+    {
+        return $this->verified;
+    }
+
+    public function setVerified(?bool $verified): static
+    {
+        $this->verified = $verified;
+
+        return $this;
     }
 }

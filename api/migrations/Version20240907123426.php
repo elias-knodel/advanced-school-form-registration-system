@@ -10,11 +10,11 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20240821215453 extends AbstractMigration
+final class Version20240907123426 extends AbstractMigration
 {
     public function getDescription(): string
     {
-        return '';
+        return 'Creates the base of each School Entities with relations';
     }
 
     public function up(Schema $schema): void
@@ -50,11 +50,21 @@ final class Version20240821215453 extends AbstractMigration
         $this->addSql('COMMENT ON COLUMN school_register_request.custom_form_id IS \'(DC2Type:uuid)\'');
         $this->addSql('COMMENT ON COLUMN school_register_request.created_at IS \'(DC2Type:datetime_immutable)\'');
         $this->addSql('COMMENT ON COLUMN school_register_request.updated_at IS \'(DC2Type:datetime_immutable)\'');
+        $this->addSql('CREATE TABLE school_staff (id UUID NOT NULL, employee_id UUID NOT NULL, school_id UUID NOT NULL, created_at TIMESTAMP(0) WITHOUT TIME ZONE NOT NULL, updated_at TIMESTAMP(0) WITHOUT TIME ZONE DEFAULT NULL, PRIMARY KEY(id))');
+        $this->addSql('CREATE INDEX IDX_9C9445888C03F15C ON school_staff (employee_id)');
+        $this->addSql('CREATE INDEX IDX_9C944588C32A47EE ON school_staff (school_id)');
+        $this->addSql('COMMENT ON COLUMN school_staff.id IS \'(DC2Type:uuid)\'');
+        $this->addSql('COMMENT ON COLUMN school_staff.employee_id IS \'(DC2Type:uuid)\'');
+        $this->addSql('COMMENT ON COLUMN school_staff.school_id IS \'(DC2Type:uuid)\'');
+        $this->addSql('COMMENT ON COLUMN school_staff.created_at IS \'(DC2Type:datetime_immutable)\'');
+        $this->addSql('COMMENT ON COLUMN school_staff.updated_at IS \'(DC2Type:datetime_immutable)\'');
         $this->addSql('ALTER TABLE custom_field ADD CONSTRAINT FK_98F8BD31C32A47EE FOREIGN KEY (school_id) REFERENCES school (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE custom_form ADD CONSTRAINT FK_53FE35B2C32A47EE FOREIGN KEY (school_id) REFERENCES school (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE custom_form_field ADD CONSTRAINT FK_E74DDD315FF69B7D FOREIGN KEY (form_id) REFERENCES custom_form (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE custom_form_field ADD CONSTRAINT FK_E74DDD31443707B0 FOREIGN KEY (field_id) REFERENCES custom_field (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
         $this->addSql('ALTER TABLE school_register_request ADD CONSTRAINT FK_A4057E9A58AFF2B0 FOREIGN KEY (custom_form_id) REFERENCES custom_form (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE school_staff ADD CONSTRAINT FK_9C9445888C03F15C FOREIGN KEY (employee_id) REFERENCES "user" (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
+        $this->addSql('ALTER TABLE school_staff ADD CONSTRAINT FK_9C944588C32A47EE FOREIGN KEY (school_id) REFERENCES school (id) NOT DEFERRABLE INITIALLY IMMEDIATE');
     }
 
     public function down(Schema $schema): void
@@ -66,10 +76,13 @@ final class Version20240821215453 extends AbstractMigration
         $this->addSql('ALTER TABLE custom_form_field DROP CONSTRAINT FK_E74DDD315FF69B7D');
         $this->addSql('ALTER TABLE custom_form_field DROP CONSTRAINT FK_E74DDD31443707B0');
         $this->addSql('ALTER TABLE school_register_request DROP CONSTRAINT FK_A4057E9A58AFF2B0');
+        $this->addSql('ALTER TABLE school_staff DROP CONSTRAINT FK_9C9445888C03F15C');
+        $this->addSql('ALTER TABLE school_staff DROP CONSTRAINT FK_9C944588C32A47EE');
         $this->addSql('DROP TABLE custom_field');
         $this->addSql('DROP TABLE custom_form');
         $this->addSql('DROP TABLE custom_form_field');
         $this->addSql('DROP TABLE school');
         $this->addSql('DROP TABLE school_register_request');
+        $this->addSql('DROP TABLE school_staff');
     }
 }

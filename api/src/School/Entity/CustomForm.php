@@ -2,14 +2,19 @@
 
 namespace App\School\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Core\Doctrine\Lifecycle\TimestampableTrait;
 use App\School\Repository\CustomFormRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
+#[ApiResource(
+    uriTemplate: '/schools/{school}/custom_form.{_format}',
+)]
 #[ORM\Entity(repositoryClass: CustomFormRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class CustomForm
@@ -24,7 +29,7 @@ class CustomForm
 
     #[ORM\ManyToOne(inversedBy: 'customForms')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?School $School = null;
+    private ?School $school = null;
 
     /**
      * @var Collection<int, CustomFormField>
@@ -37,6 +42,21 @@ class CustomForm
      */
     #[ORM\OneToMany(mappedBy: 'CustomForm', targetEntity: SchoolRegisterRequest::class, orphanRemoval: true)]
     private Collection $schoolRegisterRequests;
+
+    #[ORM\Column(length: 255)]
+    private ?string $title = null;
+
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $description = null;
+
+    #[ORM\Column(type: Types::SMALLINT, nullable: true)]
+    private ?int $order = null;
+
+    #[ORM\Column(type: Types::DATETIMETZ_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $startDate = null;
+
+    #[ORM\Column(type: Types::DATETIMETZ_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $endDate = null;
 
     public function __construct()
     {
@@ -51,12 +71,12 @@ class CustomForm
 
     public function getSchool(): ?School
     {
-        return $this->School;
+        return $this->school;
     }
 
-    public function setSchool(?School $School): static
+    public function setSchool(?School $school): static
     {
-        $this->School = $School;
+        $this->school = $school;
 
         return $this;
     }
@@ -117,6 +137,66 @@ class CustomForm
                 $schoolRegisterRequest->setCustomForm(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getTitle(): ?string
+    {
+        return $this->title;
+    }
+
+    public function setTitle(string $title): static
+    {
+        $this->title = $title;
+
+        return $this;
+    }
+
+    public function getDescription(): ?string
+    {
+        return $this->description;
+    }
+
+    public function setDescription(?string $description): static
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    public function getOrder(): ?int
+    {
+        return $this->order;
+    }
+
+    public function setOrder(int $order): static
+    {
+        $this->order = $order;
+
+        return $this;
+    }
+
+    public function getStartDate(): ?\DateTimeInterface
+    {
+        return $this->startDate;
+    }
+
+    public function setStartDate(?\DateTimeInterface $startDate): static
+    {
+        $this->startDate = $startDate;
+
+        return $this;
+    }
+
+    public function getEndDate(): ?\DateTimeInterface
+    {
+        return $this->endDate;
+    }
+
+    public function setEndDate(?\DateTimeInterface $endDate): static
+    {
+        $this->endDate = $endDate;
 
         return $this;
     }
