@@ -1,27 +1,30 @@
 <?php
 
-namespace App\School\Factory;
+namespace App\User\Factory;
 
-use App\School\Entity\CustomFormField;
+use App\User\Entity\User;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<CustomFormField>
+ * @extends PersistentProxyObjectFactory<User>
  */
-final class CustomFormFieldFactory extends PersistentProxyObjectFactory
+final class UserFactory extends PersistentProxyObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
      *
      * @todo inject services if required
      */
-    public function __construct()
+    public function __construct(
+        private UserPasswordHasherInterface $passwordHasher,
+    )
     {
     }
 
     public static function class(): string
     {
-        return CustomFormField::class;
+        return User::class;
     }
 
     /**
@@ -32,9 +35,9 @@ final class CustomFormFieldFactory extends PersistentProxyObjectFactory
     protected function defaults(): array|callable
     {
         return [
-            'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-            'field' => CustomFieldFactory::new(),
-            'form' => CustomFormFactory::new(),
+            'email' => self::faker()->email(),
+            'password' => self::faker()->password(),
+            'roles' => [],
         ];
     }
 
@@ -44,7 +47,11 @@ final class CustomFormFieldFactory extends PersistentProxyObjectFactory
     protected function initialize(): static
     {
         return $this
-            // ->afterInstantiate(function(CustomFormField $customFormField): void {})
-        ;
+            ->afterInstantiate(function (User $user): void {
+                $user->setPassword($this->passwordHasher->hashPassword(
+                    $user,
+                    $user->getPassword()
+                ));
+            });
     }
 }

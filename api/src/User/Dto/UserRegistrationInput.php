@@ -24,12 +24,4 @@ class UserRegistrationInput
     #[Assert\PasswordStrength]
     #[Groups(['user:create'])]
     public string $password;
-
-    #[ApiProperty(
-        example: "username123"
-    )]
-    #[Assert\NotBlank]
-    #[Assert\Length(min: 8, max: 32)]
-    #[Groups(['user:create'])]
-    public string $username;
 }

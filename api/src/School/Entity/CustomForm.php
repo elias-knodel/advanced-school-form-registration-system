@@ -50,7 +50,7 @@ class CustomForm
     private ?string $description = null;
 
     #[ORM\Column(type: Types::SMALLINT, nullable: true)]
-    private ?int $order = null;
+    private ?int $position = null;
 
     #[ORM\Column(type: Types::DATETIMETZ_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $startDate = null;
@@ -165,14 +165,14 @@ class CustomForm
         return $this;
     }
 
-    public function getOrder(): ?int
+    public function getPosition(): ?int
     {
-        return $this->order;
+        return $this->position;
     }
 
-    public function setOrder(int $order): static
+    public function setPosition(int $position): static
     {
-        $this->order = $order;
+        $this->position = $position;
 
         return $this;
     }

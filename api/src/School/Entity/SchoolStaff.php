@@ -30,7 +30,7 @@ class SchoolStaff
     #[ORM\JoinColumn(nullable: false)]
     private ?School $school = null;
 
-    #[ORM\Column(type: 'string', enumType: SchoolStaffRole::class)]
+    #[ORM\Column(enumType: SchoolStaffRole::class)]
     private ?SchoolStaffRole $role = null;
 
     public function getId(): ?Uuid

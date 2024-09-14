@@ -25,7 +25,7 @@ final class Version20240907135136 extends AbstractMigration
         $this->addSql('ALTER TABLE custom_field ADD type VARCHAR(255) NOT NULL');
         $this->addSql('ALTER TABLE custom_form ADD title VARCHAR(255) NOT NULL');
         $this->addSql('ALTER TABLE custom_form ADD description TEXT DEFAULT NULL');
-        $this->addSql('ALTER TABLE custom_form ADD "order" SMALLINT DEFAULT NULL');
+        $this->addSql('ALTER TABLE custom_form ADD position SMALLINT DEFAULT NULL');
         $this->addSql('ALTER TABLE custom_form ADD start_date TIMESTAMP(0) WITH TIME ZONE DEFAULT NULL');
         $this->addSql('ALTER TABLE custom_form ADD end_date TIMESTAMP(0) WITH TIME ZONE DEFAULT NULL');
         $this->addSql('ALTER TABLE custom_form_field ADD position SMALLINT NOT NULL');
@@ -45,7 +45,7 @@ final class Version20240907135136 extends AbstractMigration
         $this->addSql('ALTER TABLE custom_form_field DROP half');
         $this->addSql('ALTER TABLE custom_form DROP title');
         $this->addSql('ALTER TABLE custom_form DROP description');
-        $this->addSql('ALTER TABLE custom_form DROP "order"');
+        $this->addSql('ALTER TABLE custom_form DROP position');
         $this->addSql('ALTER TABLE custom_form DROP start_date');
         $this->addSql('ALTER TABLE custom_form DROP end_date');
         $this->addSql('ALTER TABLE school_staff DROP role');

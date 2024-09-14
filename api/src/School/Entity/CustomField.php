@@ -40,7 +40,7 @@ class CustomField
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $tooltip = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(enumType: CustomFieldType::class)]
     private ?CustomFieldType $type = null;
 
     public function __construct()
