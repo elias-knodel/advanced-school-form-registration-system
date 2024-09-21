@@ -10,7 +10,11 @@ class AppFixtures extends Fixture
 {
     public function load(ObjectManager $manager): void
     {
-        UserFactory::createOne();
+        UserFactory::createOne([
+            'email' => 'string',
+            'password' => 'string',
+            'roles' => ['ROLE_ADMIN'],
+        ]);
 
 //        $school = new School();
 //        $manager->persist($school);

@@ -22,7 +22,7 @@ class SchoolRegisterRequest
 
     #[ORM\ManyToOne(inversedBy: 'schoolRegisterRequests')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?CustomForm $CustomForm = null;
+    private ?CustomForm $customForm = null;
 
     public function getId(): ?Uuid
     {
@@ -31,12 +31,12 @@ class SchoolRegisterRequest
 
     public function getCustomForm(): ?CustomForm
     {
-        return $this->CustomForm;
+        return $this->customForm;
     }
 
-    public function setCustomForm(?CustomForm $CustomForm): static
+    public function setCustomForm(?CustomForm $customForm): static
     {
-        $this->CustomForm = $CustomForm;
+        $this->customForm = $customForm;
 
         return $this;
     }

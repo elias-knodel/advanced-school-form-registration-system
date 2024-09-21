@@ -31,7 +31,7 @@ class CustomField
     /**
      * @var Collection<int, CustomFormField>
      */
-    #[ORM\OneToMany(mappedBy: 'Field', targetEntity: CustomFormField::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'field', targetEntity: CustomFormField::class, orphanRemoval: true)]
     private Collection $customFormFields;
 
     #[ORM\Column(length: 255)]

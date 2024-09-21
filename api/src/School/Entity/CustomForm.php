@@ -13,7 +13,7 @@ use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
 #[ApiResource(
-    uriTemplate: '/schools/{school}/custom_form.{_format}',
+    uriTemplate: '/schools/{school}/custom_form{._format}',
 )]
 #[ORM\Entity(repositoryClass: CustomFormRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -34,13 +34,13 @@ class CustomForm
     /**
      * @var Collection<int, CustomFormField>
      */
-    #[ORM\OneToMany(mappedBy: 'Form', targetEntity: CustomFormField::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'form', targetEntity: CustomFormField::class, orphanRemoval: true)]
     private Collection $customFormFields;
 
     /**
      * @var Collection<int, SchoolRegisterRequest>
      */
-    #[ORM\OneToMany(mappedBy: 'CustomForm', targetEntity: SchoolRegisterRequest::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'customForm', targetEntity: SchoolRegisterRequest::class, orphanRemoval: true)]
     private Collection $schoolRegisterRequests;
 
     #[ORM\Column(length: 255)]

@@ -23,7 +23,7 @@ class EmailVerification
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
     private ?Uuid $id = null;
 
-    #[ORM\OneToOne(cascade: ['persist'])]
+    #[ORM\OneToOne(inversedBy: 'emailVerification', cascade: ['persist'])]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $owner = null;
 

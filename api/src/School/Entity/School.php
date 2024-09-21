@@ -27,13 +27,13 @@ class School
     /**
      * @var Collection<int, CustomForm>
      */
-    #[ORM\OneToMany(mappedBy: 'School', targetEntity: CustomForm::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'school', targetEntity: CustomForm::class, orphanRemoval: true)]
     private Collection $customForms;
 
     /**
      * @var Collection<int, CustomField>
      */
-    #[ORM\OneToMany(mappedBy: 'School', targetEntity: CustomField::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'school', targetEntity: CustomField::class, orphanRemoval: true)]
     private Collection $customFields;
 
     /**
