@@ -89,102 +89,128 @@ class UserTest extends CustomApiTestCase
     public function testGetUserCollection()
     {
         $user = UserFactory::createOne();
+        $userAdmin = UserFactory::new()->asAdmin()->create();
 
+        // Unauthenticated user can access empty user collection
         $this->browser()
             ->get('/api/users')
             ->assertStatus(200)
             ->assertJson()
-            ->assertJsonMatches('"hydra:totalItems"', 1)
+            ->assertJsonMatches('"hydra:totalItems"', 0);
+
+        // Authenticated user can access user collection with only self
+        $this->browser()
+            ->actingAs($user)
+            ->get('/api/users')
+            ->assertStatus(200)
+            ->assertJson()
+            ->assertJsonMatches('"hydra:totalItems"', 1);
+
+        // Authenticated admin user can access user collection with all users
+        $this->browser()
+            ->actingAs($userAdmin)
+            ->get('/api/users')
+            ->assertStatus(200)
+            ->assertJson()
+            ->assertJsonMatches('"hydra:totalItems"', 2)
             ->assertJsonMatches('"hydra:member"', [
                 [
                     '@id' => '/api/users/' . $user->getId(),
                     '@type' => 'User',
                     'email' => $user->getEmail(),
                 ],
+                [
+                    '@id' => '/api/users/' . $userAdmin->getId(),
+                    '@type' => 'User',
+                    'email' => $userAdmin->getEmail(),
+                ],
             ]);
     }
 
-//    public function testGetUserCollection(): void
-//    {
-//        // Arrange: Create some test users
-//        $client = static::createClient();
-//        $client->request('POST', '/users', [
-//            'json' => [
-//                'email' => 'test1@example.com',
-//                'password' => 'strong_password_123',
-//            ],
-//        ]);
-//
-//        $client->request('POST', '/users', [
-//            'json' => [
-//                'email' => 'test2@example.com',
-//                'password' => 'strong_password_456',
-//            ],
-//        ]);
-//
-//        // Act: Make a GET request to the collection endpoint
-//        $response = $client->request('GET', '/users');
-//
-//        // Assert: Verify the status code and response structure
-//        $this->assertResponseIsSuccessful();
-//        $this->assertJsonContains([
-//            ['email' => 'test1@example.com'],
-//            ['email' => 'test2@example.com'],
-//        ]);
-//    }
+    public function testGetUser()
+    {
+        $user = UserFactory::createOne();
+        $userExternal = UserFactory::createOne();
 
-//    public function testGetUser(): void
-//    {
-//        // Arrange: Create a test user
-//        $client = static::createClient();
-//        $client->request('POST', '/users', [
-//            'json' => [
-//                'email' => 'test@example.com',
-//                'password' => 'ChangeMe123!?=',
-//            ],
-//        ]);
-//
-//        $userIri = $this->findIriBy(User::class, ['email' => 'test@example.com']);
-//
-//        // Act: Make a GET request to retrieve the user
-//        $response = $client->request('GET', $userIri);
-//
-//        // Assert: Verify the response
-//        $this->assertResponseIsSuccessful();
-//        $this->assertJsonContains(['email' => 'test@example.com']);
-//    }
+        // Unauthenticated user cannot access user
+        $this->browser()
+            ->get('/api/users/' . $user->getId())
+            ->assertStatus(401);
 
-//    public function testPatchToUpdateUser(): void
-//    {
-//        UserFactory::createMany(10);
-//
-//        $this->browser()
-//            ->get('/api/users')
-//            ->assertJson()
-//            ->assertJsonMatches('"hydra:totalItems"', 10);
-//    }
+        // Authenticated user cannot access other user
+        $this->browser()
+            ->actingAs($user)
+            ->get('/api/users/' . $userExternal->getId())
+            ->assertStatus(403);
 
-//    public function testDeleteUser(): void
-//    {
-//        // Arrange: Create a test user
-//        $client = static::createClient();
-//        $client->request('POST', '/users', [
-//            'json' => [
-//                'email' => 'deleteuser@example.com',
-//                'password' => 'password_to_delete',
-//            ],
-//        ]);
-//
-//        $userIri = $this->findIriBy(User::class, ['email' => 'deleteuser@example.com']);
-//
-//        // Act: Delete the user
-//        $client->request('DELETE', $userIri);
-//
-//        // Assert: Check that the user was deleted successfully
-//        $this->assertResponseStatusCodeSame(204);
-//
-//        // Verify that the user no longer exists
-//        $client->request('GET', $userIri);
-//        $this->assertResponseStatusCodeSame(404);
-//    }
+        // Authenticated user can access own user
+        $this->browser()
+            ->actingAs($user)
+            ->get('/api/users/' . $user->getId())
+            ->assertStatus(200)
+            ->assertJson();
+    }
+
+    public function testPatchUser()
+    {
+        $user = UserFactory::createOne();
+        $user2 = UserFactory::createOne();
+
+        // Unauthenticated user cannot update user
+        $this->browser()
+            ->patch('/api/users/' . $user->getId(), [
+                'json' => [
+                    'email' => 'changed@example.com',
+                ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json']
+            ])
+            ->assertStatus(401);
+
+        // Authenticated user cannot update other user
+        $this->browser()
+            ->actingAs($user)
+            ->patch('/api/users/' . $user2->getId(), [
+                'json' => [
+                    'email' => 'changed@example.com',
+                ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json']
+            ])
+            ->assertStatus(403);
+
+        // Authenticated user can update own user
+        $this->browser()
+            ->actingAs($user)
+            ->patch('/api/users/' . $user->getId(), [
+                'json' => [
+                    'email' => 'changed@example.com',
+                ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json']
+            ])
+            ->assertStatus(200);
+    }
+
+    public function testDeleteUser()
+    {
+        $user = UserFactory::createOne();
+        $user2 = UserFactory::createOne();
+
+        // Unauthenticated user cannot delete user
+        $this->browser()
+            ->delete('/api/users/' . $user->getId())
+            ->assertStatus(401)
+            ->assertJson();
+
+        // Authenticated user cannot delete other user
+        $this->browser()
+            ->actingAs($user)
+            ->delete('/api/users/' . $user2->getId())
+            ->assertStatus(403)
+            ->assertJson();
+
+        // Authenticated user can delete own user
+        $this->browser()
+            ->actingAs($user)
+            ->delete('/api/users/' . $user->getId())
+            ->assertStatus(204);
+    }
 }

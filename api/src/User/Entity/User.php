@@ -36,7 +36,7 @@ use Symfony\Component\Validator\Constraints as Assert;
             validationContext: ['groups' => ['Default', 'user:update']],
         ),
         new Delete(
-//            security: "is_granted('USER_EDIT', object)",
+            security: "is_granted('USER_EDIT', object)",
         ),
         new Post(
             input: UserRegistrationInput::class,

@@ -1,24 +1,86 @@
 # Custom fields
 
 - Frontend: [Svelte 5](https://svelte.dev/)
-- API: [API Platform](https://api-platform.com/)
-
+- API: [API Platform 4](https://api-platform.com/)
 
 ## Installation
 
-### 1. Build docker images
+### 1. Start
 
 ```bash
-docker compose build --no-cache
+make up
 ```
 
-### 2. Start docker containers
+### 2. Stop
 
 ```bash
-docker compose up --wait 
+make stop
 ```
 
 Done!
 
 ## Usage
 
+## Test TODO:
+
+### User:
+
+- [x] testCreateUser
+- [ ] testGetUserCollection
+- [ ] testGetUser
+- [ ] testPatchUser
+- [ ] testDeleteUser
+
+### Auth:
+
+- [ ] testLogin
+- [ ] testJWT
+- [ ] testJWTRefresh
+
+### School:
+
+- [ ] testCreateSchool
+- [ ] testGetSchoolCollection
+- [ ] testGetSchool
+- [ ] testPatchSchool
+- [ ] testDeleteSchool
+
+### SchoolStaff:
+
+- [ ] testCreateSchoolStaff
+- [ ] testGetSchoolStaffCollection
+- [ ] testGetSchoolStaff
+- [ ] testPatchSchoolStaff
+- [ ] testDeleteSchoolStaff
+
+### CustomField:
+
+- [ ] testCreateCustomField
+- [ ] testGetCustomFieldCollection
+- [ ] testGetCustomField
+- [ ] testPatchCustomField
+- [ ] testDeleteCustomField
+
+### CustomForm:
+
+- [ ] testCreateCustomForm
+- [ ] testGetCustomFormCollection
+- [ ] testGetCustomForm
+- [ ] testPatchCustomForm
+- [ ] testDeleteCustomForm
+
+### CustomFormField:
+
+- [ ] testCreateCustomFormField
+- [ ] testGetCustomFormFieldCollection
+- [ ] testGetCustomFormField
+- [ ] testPatchCustomFormField
+- [ ] testDeleteCustomFormField
+
+### SchoolRegisterRequest:
+
+- [ ] testCreateSchoolRegisterRequest
+- [ ] testGetSchoolRegisterRequestCollection
+- [ ] testGetSchoolRegisterRequest
+- [ ] testPatchSchoolRegisterRequest
+- [ ] testDeleteSchoolRegisterRequest

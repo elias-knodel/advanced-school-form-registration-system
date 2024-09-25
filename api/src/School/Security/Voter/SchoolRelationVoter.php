@@ -1,17 +1,18 @@
 <?php
 
-namespace App\User\Security\Voter;
+namespace App\School\Security\Voter;
 
+use App\School\Entity\School;
 use App\User\Entity\User;
 use LogicException;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
-class UserVoter extends Voter
+final class SchoolRelationVoter extends Voter
 {
-    public const VIEW = 'USER_VIEW';
-    public const EDIT = 'USER_EDIT';
+    public const EDIT = 'SCHOOL_EDIT';
+    public const VIEW = 'SCHOOL_VIEW';
 
     public function __construct(
         private readonly Security $security
@@ -25,7 +26,7 @@ class UserVoter extends Voter
             return false;
         }
 
-        if (!$subject instanceof User) {
+        if (!$subject instanceof School) {
             return false;
         }
 
@@ -39,8 +40,8 @@ class UserVoter extends Voter
             return false;
         }
 
-        /** @var User $subject */
-        assert($subject instanceof User);
+        /** @var School $subject */
+        assert ($subject instanceof School);
 
         if ($this->security->isGranted('ROLE_ADMIN')) {
             return true;
@@ -52,9 +53,9 @@ class UserVoter extends Voter
         };
     }
 
-    private function canEdit(User $subject, User $user): bool
+    private function canEdit(School $subject, User $user): bool
     {
-        if ($subject->getId()->equals($user->getId())) {
+        if ($subject->getSchoolStaff()->contains($user)) {
             return true;
         }
 

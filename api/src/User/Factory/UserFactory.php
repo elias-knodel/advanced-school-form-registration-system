@@ -11,20 +11,26 @@ use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
  */
 final class UserFactory extends PersistentProxyObjectFactory
 {
-    /**
-     * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
-     *
-     * @todo inject services if required
-     */
     public function __construct(
-        private UserPasswordHasherInterface $passwordHasher,
+        private readonly UserPasswordHasherInterface $passwordHasher,
     )
     {
+        parent::__construct();
     }
 
     public static function class(): string
     {
         return User::class;
+    }
+
+    public function withRoles(array $roles): self
+    {
+        return $this->with(['roles' => $roles]);
+    }
+
+    public function asAdmin(): self
+    {
+        return $this->withRoles(['ROLE_ADMIN']);
     }
 
     /**
@@ -37,7 +43,6 @@ final class UserFactory extends PersistentProxyObjectFactory
         return [
             'email' => self::faker()->email(),
             'password' => self::faker()->password(),
-            'roles' => [],
         ];
     }
 
