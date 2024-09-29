@@ -34,27 +34,28 @@ class UserVoter extends Voter
 
     protected function voteOnAttribute(string $attribute, mixed $subject, TokenInterface $token): bool
     {
+        /** @var User $user */
         $user = $token->getUser();
         if (!$user instanceof User) {
             return false;
         }
 
-        /** @var User $subject */
-        assert($subject instanceof User);
+        /** @var User $userSubject */
+        $userSubject = $subject;
 
         if ($this->security->isGranted('ROLE_ADMIN')) {
             return true;
         }
 
         return match ($attribute) {
-            self::VIEW, self::EDIT => $this->canEdit($subject, $user),
+            self::VIEW, self::EDIT => $this->canEdit($userSubject, $user),
             default => throw new LogicException('This code should not be reached!')
         };
     }
 
-    private function canEdit(User $subject, User $user): bool
+    private function canEdit(User $userSubject, User $user): bool
     {
-        if ($subject->getId()->equals($user->getId())) {
+        if ($userSubject->getId()->equals($user->getId())) {
             return true;
         }
 

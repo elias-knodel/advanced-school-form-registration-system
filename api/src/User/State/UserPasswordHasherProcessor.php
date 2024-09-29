@@ -21,7 +21,7 @@ final readonly class UserPasswordHasherProcessor implements ProcessorInterface
     {
     }
 
-    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = []): ?User
+    public function process(mixed $data, Operation $operation, array $uriVariables = [], array $context = [])
     {
         if (!$data instanceof User || !$data->getPlainPassword()) {
             return $this->innerProcessor->process($data, $operation, $uriVariables, $context);

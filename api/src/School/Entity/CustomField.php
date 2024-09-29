@@ -2,6 +2,7 @@
 
 namespace App\School\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
 use App\Core\Doctrine\Lifecycle\TimestampableTrait;
 use App\School\Enum\CustomFieldType;
 use App\School\Repository\CustomFieldRepository;
@@ -12,6 +13,9 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
 
+#[ApiResource(
+    uriTemplate: '/schools/{school}/custom_field{._format}',
+)]
 #[ORM\Entity(repositoryClass: CustomFieldRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class CustomField

@@ -3,15 +3,38 @@
 namespace App\School\Entity;
 
 use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Core\Doctrine\Lifecycle\TimestampableTrait;
 use App\School\Repository\SchoolRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Uid\Uuid;
 
-#[ApiResource]
+#[ApiResource(
+    operations: [
+        new GetCollection(),
+        new Get(),
+        new Patch(
+            security: "is_granted('SCHOOL_EDIT', object)",
+            validationContext: ['groups' => ['Default', 'school:update']],
+        ),
+        new Delete(
+            security: "is_granted('SCHOOL_DELETE', object)",
+        ),
+        new Post(
+            securityPostDenormalize: "is_granted('SCHOOL_CREATE', object)",
+        ),
+    ],
+    normalizationContext: ['groups' => ['school:read']],
+    denormalizationContext: ['groups' => ['school:create', 'school:update']],
+)]
 #[ORM\Entity(repositoryClass: SchoolRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class School
@@ -22,6 +45,7 @@ class School
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    #[Groups(['school:read'])]
     private ?Uuid $id = null;
 
     /**

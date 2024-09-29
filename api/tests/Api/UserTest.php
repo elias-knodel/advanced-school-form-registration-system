@@ -117,11 +117,13 @@ class UserTest extends CustomApiTestCase
                 [
                     '@id' => '/api/users/' . $user->getId(),
                     '@type' => 'User',
+                    'id' => (string)$user->getId(),
                     'email' => $user->getEmail(),
                 ],
                 [
                     '@id' => '/api/users/' . $userAdmin->getId(),
                     '@type' => 'User',
+                    'id' => (string)$userAdmin->getId(),
                     'email' => $userAdmin->getEmail(),
                 ],
             ]);
@@ -187,6 +189,19 @@ class UserTest extends CustomApiTestCase
                 'headers' => ['Content-Type' => 'application/merge-patch+json']
             ])
             ->assertStatus(200);
+
+        // Authenticated user can change password and it gets hashed
+        $this->browser()
+            ->actingAs($user)
+            ->patch('/api/users/' . $user->getId(), [
+                'json' => [
+                    'password' => 'new_password_123',
+                ],
+                'headers' => ['Content-Type' => 'application/merge-patch+json']
+            ])
+            ->assertStatus(200);
+
+        assert($user->getPassword() !== 'new_password_123');
     }
 
     public function testDeleteUser()

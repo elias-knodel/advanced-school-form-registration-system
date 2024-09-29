@@ -10,6 +10,7 @@ use ApiPlatform\Metadata\Patch;
 use ApiPlatform\Metadata\Post;
 use App\Core\Doctrine\Lifecycle\TimestampableTrait;
 use App\School\Entity\SchoolStaff;
+use App\State\UserCollectionProvider;
 use App\User\Dto\UserRegistrationInput;
 use App\User\Repository\UserRepository;
 use App\User\State\UserRegistrationProcessor;
@@ -58,6 +59,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    #[Groups(['user:read'])]
     private ?Uuid $id = null;
 
     #[Assert\Email(
