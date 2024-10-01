@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Core\Doctrine\Extension;
+namespace App\User\Doctrine\Extension;
 
 use ApiPlatform\Doctrine\Orm\Extension\QueryCollectionExtensionInterface;
 use ApiPlatform\Doctrine\Orm\Util\QueryNameGeneratorInterface;
