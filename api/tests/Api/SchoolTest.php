@@ -2,6 +2,7 @@
 
 namespace App\Tests\Api;
 
+use App\School\Factory\SchoolFactory;
 use App\Tests\Functional\CustomApiTestCase;
 use App\User\Factory\UserFactory;
 use Zenstruck\Foundry\Test\Factories;
@@ -42,12 +43,39 @@ class SchoolTest extends CustomApiTestCase
             ->assertJson()
             ->assertJsonMatches('"@type"', 'School');
     }
-//
-//    public function testGetSchoolStaffCollection()
-//    {
-//    }
-//
-//    public function testGetSchoolStaff()
+
+    /**
+     * TODO: Conditional viewing based on roles (information like payment etc)
+     */
+    public function testGetSchoolCollection()
+    {
+        SchoolFactory::createMany(5);
+        $user = UserFactory::createOne();
+        $userAdmin = UserFactory::new()->asAdmin()->create();
+
+        // Unauthorized user can get school collection
+        $this->browser()
+            ->get('/api/schools')
+            ->assertStatus(200)
+            ->assertJsonMatches('"hydra:totalItems"', 5);
+
+        // Authorized user can get school collection
+        $this->browser()
+            ->actingAs($user)
+            ->get('/api/schools')
+            ->assertStatus(200)
+            ->assertJsonMatches('"hydra:totalItems"', 5);
+
+        // Authorized but verified user can get school collection
+        $this->browser()
+            ->actingAs($userAdmin)
+            ->get('/api/schools')
+            ->assertStatus(200)
+            ->assertJson()
+            ->assertJsonMatches('"hydra:totalItems"', 5);
+    }
+
+//    public function testGetSchool()
 //    {
 //        $user = UserFactory::createOne();
 //        $school = SchoolFactory::createOne();
@@ -71,11 +99,11 @@ class SchoolTest extends CustomApiTestCase
     // Unauthenticated user cannot get school
 //    }
 //
-//    public function testPatchSchoolStaff()
+//    public function testPatchSchool()
 //    {
 //    }
 //
-//    public function testDeleteSchoolStaff()
+//    public function testDeleteSchool()
 //    {
 //    }
 }

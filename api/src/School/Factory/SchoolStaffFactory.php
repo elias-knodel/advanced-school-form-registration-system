@@ -1,14 +1,16 @@
 <?php
 
-namespace App\Factory;
+namespace App\School\Factory;
 
-use App\School\Entity\School;
+use App\School\Entity\SchoolStaff;
+use App\School\Enum\SchoolStaffRole;
+use App\User\Factory\UserFactory;
 use Zenstruck\Foundry\Persistence\PersistentProxyObjectFactory;
 
 /**
- * @extends PersistentProxyObjectFactory<School>
+ * @extends PersistentProxyObjectFactory<SchoolStaff>
  */
-final class SchoolFactory extends PersistentProxyObjectFactory
+final class SchoolStaffFactory extends PersistentProxyObjectFactory
 {
     /**
      * @see https://symfony.com/bundles/ZenstruckFoundryBundle/current/index.html#factories-as-services
@@ -22,7 +24,7 @@ final class SchoolFactory extends PersistentProxyObjectFactory
 
     public static function class(): string
     {
-        return School::class;
+        return SchoolStaff::class;
     }
 
     /**
@@ -32,7 +34,11 @@ final class SchoolFactory extends PersistentProxyObjectFactory
      */
     protected function defaults(): array|callable
     {
-        return [];
+        return [
+            'role' => SchoolStaffRole::STAFF,
+            'employee' => UserFactory::createOne(),
+            'school' => SchoolFactory::createOne(),
+        ];
     }
 
     /**
@@ -41,7 +47,7 @@ final class SchoolFactory extends PersistentProxyObjectFactory
     protected function initialize(): static
     {
         return $this
-            // ->afterInstantiate(function(School $school): void {})
+//             ->afterInstantiate(function(SchoolStaff $schoolStaff): void {})
         ;
     }
 }
