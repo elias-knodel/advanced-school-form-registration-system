@@ -2,14 +2,39 @@
 
 namespace App\School\Entity;
 
+use ApiPlatform\Metadata\ApiResource;
+use ApiPlatform\Metadata\Delete;
+use ApiPlatform\Metadata\Get;
+use ApiPlatform\Metadata\GetCollection;
+use ApiPlatform\Metadata\Patch;
+use ApiPlatform\Metadata\Post;
 use App\Core\Doctrine\Lifecycle\TimestampableTrait;
 use App\School\Repository\SchoolRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Uid\Uuid;
 
+#[ApiResource(
+    operations: [
+        new GetCollection(),
+        new Get(),
+        new Patch(
+            security: "is_granted('SCHOOL_EDIT', object)",
+            validationContext: ['groups' => ['Default', 'school:update']],
+        ),
+        new Delete(
+            security: "is_granted('SCHOOL_DELETE', object)",
+        ),
+        new Post(
+            securityPostDenormalize: "is_granted('SCHOOL_CREATE', object)",
+        ),
+    ],
+    normalizationContext: ['groups' => ['school:read']],
+    denormalizationContext: ['groups' => ['school:create', 'school:update']],
+)]
 #[ORM\Entity(repositoryClass: SchoolRepository::class)]
 #[ORM\HasLifecycleCallbacks]
 class School
@@ -20,24 +45,32 @@ class School
     #[ORM\Column(type: UuidType::NAME, unique: true)]
     #[ORM\GeneratedValue(strategy: 'CUSTOM')]
     #[ORM\CustomIdGenerator(class: 'doctrine.uuid_generator')]
+    #[Groups(['school:read'])]
     private ?Uuid $id = null;
 
     /**
      * @var Collection<int, CustomForm>
      */
-    #[ORM\OneToMany(mappedBy: 'School', targetEntity: CustomForm::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'school', targetEntity: CustomForm::class, orphanRemoval: true)]
     private Collection $customForms;
 
     /**
      * @var Collection<int, CustomField>
      */
-    #[ORM\OneToMany(mappedBy: 'School', targetEntity: CustomField::class, orphanRemoval: true)]
+    #[ORM\OneToMany(mappedBy: 'school', targetEntity: CustomField::class, orphanRemoval: true)]
     private Collection $customFields;
+
+    /**
+     * @var Collection<int, SchoolStaff>
+     */
+    #[ORM\OneToMany(mappedBy: 'school', targetEntity: SchoolStaff::class, orphanRemoval: true)]
+    private Collection $schoolStaff;
 
     public function __construct()
     {
         $this->customForms = new ArrayCollection();
         $this->customFields = new ArrayCollection();
+        $this->schoolStaff = new ArrayCollection();
     }
 
     public function getId(): ?Uuid
@@ -99,6 +132,36 @@ class School
             // set the owning side to null (unless already changed)
             if ($customField->getSchool() === $this) {
                 $customField->setSchool(null);
+            }
+        }
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, SchoolStaff>
+     */
+    public function getSchoolStaff(): Collection
+    {
+        return $this->schoolStaff;
+    }
+
+    public function addSchoolStaff(SchoolStaff $schoolStaff): static
+    {
+        if (!$this->schoolStaff->contains($schoolStaff)) {
+            $this->schoolStaff->add($schoolStaff);
+            $schoolStaff->setSchool($this);
+        }
+
+        return $this;
+    }
+
+    public function removeSchoolStaff(SchoolStaff $schoolStaff): static
+    {
+        if ($this->schoolStaff->removeElement($schoolStaff)) {
+            // set the owning side to null (unless already changed)
+            if ($schoolStaff->getSchool() === $this) {
+                $schoolStaff->setSchool(null);
             }
         }
 

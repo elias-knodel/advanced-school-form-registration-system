@@ -4,6 +4,7 @@ namespace App\School\Entity;
 
 use App\Core\Doctrine\Lifecycle\TimestampableTrait;
 use App\School\Repository\CustomFormFieldRepository;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Types\UuidType;
 use Symfony\Component\Uid\Uuid;
@@ -22,11 +23,17 @@ class CustomFormField
 
     #[ORM\ManyToOne(inversedBy: 'customFormFields')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?CustomForm $Form = null;
+    private ?CustomForm $form = null;
 
     #[ORM\ManyToOne(inversedBy: 'customFormFields')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?CustomField $Field = null;
+    private ?CustomField $field = null;
+
+    #[ORM\Column(type: Types::SMALLINT)]
+    private ?int $position = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?bool $half = null;
 
     public function getId(): ?Uuid
     {
@@ -35,24 +42,48 @@ class CustomFormField
 
     public function getForm(): ?CustomForm
     {
-        return $this->Form;
+        return $this->form;
     }
 
-    public function setForm(?CustomForm $Form): static
+    public function setForm(?CustomForm $form): static
     {
-        $this->Form = $Form;
+        $this->form = $form;
 
         return $this;
     }
 
     public function getField(): ?CustomField
     {
-        return $this->Field;
+        return $this->field;
     }
 
-    public function setField(?CustomField $Field): static
+    public function setField(?CustomField $field): static
     {
-        $this->Field = $Field;
+        $this->field = $field;
+
+        return $this;
+    }
+
+    public function getPosition(): ?int
+    {
+        return $this->position;
+    }
+
+    public function setPosition(int $position): static
+    {
+        $this->position = $position;
+
+        return $this;
+    }
+
+    public function isHalf(): ?bool
+    {
+        return $this->half;
+    }
+
+    public function setHalf(?bool $half): static
+    {
+        $this->half = $half;
 
         return $this;
     }

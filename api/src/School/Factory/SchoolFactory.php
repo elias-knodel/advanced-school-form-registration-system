@@ -17,6 +17,7 @@ final class SchoolFactory extends PersistentProxyObjectFactory
      */
     public function __construct()
     {
+        parent::__construct();
     }
 
     public static function class(): string
@@ -31,9 +32,7 @@ final class SchoolFactory extends PersistentProxyObjectFactory
      */
     protected function defaults(): array|callable
     {
-        return [
-            'createdAt' => \DateTimeImmutable::createFromMutable(self::faker()->dateTime()),
-        ];
+        return [];
     }
 
     /**

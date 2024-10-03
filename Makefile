@@ -41,3 +41,10 @@ db/create:
 db/migrate:
 	$(DOCKER_COMPOSE) exec api bin/console doctrine:migrations:migrate --no-interaction
 
+.PHONY: api/fixtures
+api/fixtures:
+	$(DOCKER_COMPOSE) exec api bin/console doctrine:fixtures:load --no-interaction
+
+.PHONY: api/test
+api/test:
+	$(DOCKER_COMPOSE) exec api bin/phpunit

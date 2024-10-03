@@ -2,21 +2,26 @@
 
 namespace App\User\Dto;
 
+use ApiPlatform\Metadata\ApiProperty;
+use Symfony\Component\Serializer\Attribute\Groups;
 use Symfony\Component\Validator\Constraints as Assert;
 class UserRegistrationInput
 {
+    #[ApiProperty(
+        example: "user@example.com"
+    )]
     #[Assert\NotBlank]
-    #[Assert\Email]
+    #[Assert\Email(
+        mode: Assert\Email::VALIDATION_MODE_STRICT
+    )]
+    #[Groups(['user:create'])]
     public string $email;
 
+    #[ApiProperty(
+        example: "Str0ngP@ssw0rd!"
+    )]
     #[Assert\NotBlank]
-    #[Assert\Length(min: 6)]
+    #[Assert\PasswordStrength]
+    #[Groups(['user:create'])]
     public string $password;
-
-    #[Assert\NotBlank]
-    public string $username; // For PublicProfile
-
-    // Additional fields for customer secure information, e.g., address, payment method
-    public ?string $address = null;
-    public ?string $paymentMethod = null;
 }
